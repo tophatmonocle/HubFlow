@@ -46,54 +46,54 @@ require_hubflow_initialized
 hubflow_load_settings
 
 usage() {
-	echo "usage: git hf update [-p]"
+    echo "usage: git hf update [-p]"
 }
 
 parse_args() {
-	# parse options
-	FLAGS "$@" || exit $?
-	eval set -- "${FLAGS_ARGV}"
+    # parse options
+    FLAGS "$@" || exit $?
+    eval set -- "${FLAGS_ARGV}"
 }
 
 cmd_default() {
-	cmd_update "$@"
+    cmd_update "$@"
 }
 
 cmd_help() {
-	usage
-	exit 0
+    usage
+    exit 0
 }
 
 cmd_update() {
-	# flags
-	DEFINE_boolean prune true "delete local copies of branches that have been deleted from $ORIGIN" p
-	parse_args "$@"
+    # flags
+    DEFINE_boolean prune true "delete local copies of branches that have been deleted from $ORIGIN" p
+    parse_args "$@"
 
-	# make sure we're okay to start
-	require_clean_working_tree
+    # make sure we're okay to start
+    require_clean_working_tree
 
-	# fetch and merge the latest changes from origin
-	hubflow_merge_latest_changes_from_origin
+    # fetch and merge the latest changes from origin
+    hubflow_merge_latest_changes_from_origin
 
-	# make sure we end up where we should be
-	if [[ $(git_current_branch) != $BRANCH ]] ; then
-		git checkout "$BRANCH"
-	fi
+    # make sure we end up where we should be
+    if [[ $(git_current_branch) != $BRANCH ]] ; then
+        git checkout "$BRANCH"
+    fi
 
-	# drop any branches that have disappeared from origin
-	if flag prune ; then
-		git fetch --prune || die "Unable to prune branches that no longer exist at '$ORIGIN'"
-	fi
+    # drop any branches that have disappeared from origin
+    if flag prune ; then
+        git fetch --prune || die "Unable to prune branches that no longer exist at '$ORIGIN'"
+    fi
 
-	# all done
-	echo
-	echo "Summary of actions:"
-	echo "- Any changes to branches at $ORIGIN have been downloaded to your local repository"
-	if flag prune ; then
-		echo "- Any branches that have been deleted at $ORIGIN have also been deleted from your local repository"
-	fi
-	echo "- Any changes from $ORIGIN/$MASTER_BRANCH have been merged into branch '$MASTER_BRANCH'"
-	echo "- Any changes from $ORIGIN/$DEVELOP_BRANCH have been merged into branch '$DEVELOP_BRANCH'"
-	echo "- Any resolved merge conflicts have been pushed back to $ORIGIN"
-	echo "- You are now on branch '$BRANCH'"
+    # all done
+    echo
+    echo "Summary of actions:"
+    echo "- Any changes to branches at $ORIGIN have been downloaded to your local repository"
+    if flag prune ; then
+        echo "- Any branches that have been deleted at $ORIGIN have also been deleted from your local repository"
+    fi
+    echo "- Any changes from $ORIGIN/$MASTER_BRANCH have been merged into branch '$MASTER_BRANCH'"
+    echo "- Any changes from $ORIGIN/$DEVELOP_BRANCH have been merged into branch '$DEVELOP_BRANCH'"
+    echo "- Any resolved merge conflicts have been pushed back to $ORIGIN"
+    echo "- You are now on branch '$BRANCH'"
 }
