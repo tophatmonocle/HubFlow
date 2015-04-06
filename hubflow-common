@@ -56,13 +56,13 @@ warn() { echo "$@" >&2; }
 die() { warn "$@"; exit 1; }
 
 escape() {
-    echo "$1" | sed 's/\([\.\$\*]\)/\\\1/g'
+	echo "$1" | sed 's/\([\.\$\*]\)/\\\1/g'
 }
 
 # set logic
 has() {
-    local item=$1; shift
-    echo " $@ " | grep -q " $(escape $item) "
+	local item=$1; shift
+	echo " $@ " | grep -q " $(escape $item) "
 }
 
 # basic math
@@ -87,43 +87,43 @@ git_all_branches() { ( git branch --no-color; git branch -r --no-color) | sed 's
 git_all_tags() { git tag; }
 
 git_current_branch() {
-    git branch --no-color | grep '^\* ' | grep -v 'no branch' | sed 's/^* //g'
+	git branch --no-color | grep '^\* ' | grep -v 'no branch' | sed 's/^* //g'
 }
 
 git_is_clean_working_tree() {
-    if ! git diff --no-ext-diff --ignore-submodules --quiet --exit-code; then
-        return 1
-    elif ! git diff-index --cached --quiet --ignore-submodules HEAD --; then
-        return 2
-    else
-        return 0
-    fi
+	if ! git diff --no-ext-diff --ignore-submodules --quiet --exit-code; then
+		return 1
+	elif ! git diff-index --cached --quiet --ignore-submodules HEAD --; then
+		return 2
+	else
+		return 0
+	fi
 }
 
 git_repo_is_headless() {
-    ! git rev-parse --quiet --verify HEAD >/dev/null 2>&1
+	! git rev-parse --quiet --verify HEAD >/dev/null 2>&1
 }
 
 git_local_branch_exists() {
-    has $1 $(git_local_branches)
+	has $1 $(git_local_branches)
 }
 
 git_remote_branch_exists() {
-    has $1 $(git_remote_branches)
+	has $1 $(git_remote_branches)
 }
 
 git_branch_exists() {
-    has $1 $(git_all_branches)
+	has $1 $(git_all_branches)
 }
 
 git_tag_exists() {
-    has $1 $(git_all_tags)
+	has $1 $(git_all_tags)
 }
 
 git_ping_remote() {
-    # git-ls-remote does not work w/ Git 1.7.10.2 (Apple Git-33) when
-    # executed with no parameters
-    git ls-remote "$ORIGIN" > /dev/null 2>&1
+	# git-ls-remote does not work w/ Git 1.7.10.2 (Apple Git-33) when
+	# executed with no parameters
+	git ls-remote "$ORIGIN" > /dev/null 2>&1
 }
 
 #
@@ -139,22 +139,22 @@ git_ping_remote() {
 # 4    There is no merge base, i.e. the branches have no common ancestors
 #
 git_compare_branches() {
-    local commit1=$(git rev-parse "$1")
-    local commit2=$(git rev-parse "$2")
-    if [ "$commit1" != "$commit2" ]; then
-        local base=$(git merge-base "$commit1" "$commit2")
-        if [ $? -ne 0 ]; then
-            return 4
-        elif [ "$commit1" = "$base" ]; then
-            return 1
-        elif [ "$commit2" = "$base" ]; then
-            return 2
-        else
-            return 3
-        fi
-    else
-        return 0
-    fi
+	local commit1=$(git rev-parse "$1")
+	local commit2=$(git rev-parse "$2")
+	if [ "$commit1" != "$commit2" ]; then
+		local base=$(git merge-base "$commit1" "$commit2")
+		if [ $? -ne 0 ]; then
+			return 4
+		elif [ "$commit1" = "$base" ]; then
+			return 1
+		elif [ "$commit2" = "$base" ]; then
+			return 2
+		else
+			return 3
+		fi
+	else
+		return 0
+	fi
 }
 
 #
@@ -163,10 +163,10 @@ git_compare_branches() {
 # Checks whether branch $1 is succesfully merged into $2
 #
 git_is_branch_merged_into() {
-    local subject=$1
-    local base=$2
-    local all_merges="$(git branch --no-color --contains $subject | sed 's/^[* ] //')"
-    has $base $all_merges
+	local subject=$1
+	local base=$2
+	local all_merges="$(git branch --no-color --contains $subject | sed 's/^[* ] //')"
+	has $base $all_merges
 }
 
 #
@@ -175,37 +175,37 @@ git_is_branch_merged_into() {
 
 # check if this repo has been inited for hubflow
 hubflow_has_master_configured() {
-    local master=$(git config --get hubflow.branch.master)
-    [ "$master" != "" ] && git_local_branch_exists "$master"
+	local master=$(git config --get hubflow.branch.master)
+	[ "$master" != "" ] && git_local_branch_exists "$master"
 }
 
 hubflow_has_develop_configured() {
-    local develop=$(git config --get hubflow.branch.develop)
-    [ "$develop" != "" ] && git_local_branch_exists "$develop"
+	local develop=$(git config --get hubflow.branch.develop)
+	[ "$develop" != "" ] && git_local_branch_exists "$develop"
 }
 
 hubflow_has_prefixes_configured() {
-    git config --get hubflow.prefix.feature >/dev/null 2>&1     && \
-    git config --get hubflow.prefix.release >/dev/null 2>&1     && \
-    git config --get hubflow.prefix.hotfix >/dev/null 2>&1      && \
-    git config --get hubflow.prefix.support >/dev/null 2>&1     && \
-    git config --get hubflow.prefix.versiontag >/dev/null 2>&1
+	git config --get hubflow.prefix.feature >/dev/null 2>&1     && \
+	git config --get hubflow.prefix.release >/dev/null 2>&1     && \
+	git config --get hubflow.prefix.hotfix >/dev/null 2>&1      && \
+	git config --get hubflow.prefix.support >/dev/null 2>&1     && \
+	git config --get hubflow.prefix.versiontag >/dev/null 2>&1
 }
 
 hubflow_is_initialized() {
-    hubflow_has_master_configured                    && \
-    hubflow_has_develop_configured                   && \
-    [ "$(git config --get hubflow.branch.master)" !=    \
-      "$(git config --get hubflow.branch.develop)" ] && \
-    hubflow_has_prefixes_configured
+	hubflow_has_master_configured                    && \
+	hubflow_has_develop_configured                   && \
+	[ "$(git config --get hubflow.branch.master)" !=    \
+	  "$(git config --get hubflow.branch.develop)" ] && \
+	hubflow_has_prefixes_configured
 }
 
 # loading settings that can be overridden using git config
 hubflow_load_settings() {
-    export DOT_GIT_DIR=$(git rev-parse --git-dir 2>/dev/null)
-    export MASTER_BRANCH=$(git config --get hubflow.branch.master)
-    export DEVELOP_BRANCH=$(git config --get hubflow.branch.develop)
-    export ORIGIN=$(git config --get hubflow.origin || echo origin)
+	export DOT_GIT_DIR=$(git rev-parse --git-dir 2>/dev/null)
+	export MASTER_BRANCH=$(git config --get hubflow.branch.master)
+	export DEVELOP_BRANCH=$(git config --get hubflow.branch.develop)
+	export ORIGIN=$(git config --get hubflow.origin || echo origin)
     export BRANCH=$(git_current_branch)
 }
 
@@ -425,22 +425,22 @@ hubflow_push_latest_changes_to_origin() {
 }
 
 hubflow_get_latest_version_number() {
-    LATEST="`git ls-remote --tags https://github.com/datasift/gitflow | grep -v '\^' | tail -n 1 | cut -d / -f 3`"
+	LATEST="`git ls-remote --tags https://github.com/datasift/gitflow | grep -v '\^' | tail -n 1 | cut -d / -f 3`"
 
-    echo $LATEST
+	echo $LATEST
 }
 
 hubflow_has_new_version_available() {
-    LATEST=`hubflow_get_latest_version_number`
-    if [[ $LATEST != $HUBFLOW_VERSION ]] ; then
-        echo "A new version of the HubFlow tools is available."
-        echo "To upgrade, run 'git hf upgrade'."
-        echo
-        return 0
-    fi
+	LATEST=`hubflow_get_latest_version_number`
+	if [[ $LATEST != $HUBFLOW_VERSION ]] ; then
+		echo "A new version of the HubFlow tools is available."
+		echo "To upgrade, run 'git hf upgrade'."
+		echo
+		return 0
+	fi
 
-    # no new version available
-    return 1
+	# no new version available
+	return 1
 }
 
 #
@@ -493,36 +493,36 @@ return 0
 # 2: Multiple matches found. These matches are written to stderr
 #
 hubflow_resolve_nameprefix() {
-    local name=$1
-    local prefix=$2
-    local matches
-    local num_matches
+	local name=$1
+	local prefix=$2
+	local matches
+	local num_matches
 
-    # first, check if there is a perfect match
-    if git_local_branch_exists "$prefix$name"; then
-        echo "$name"
-        return 0
-    fi
+	# first, check if there is a perfect match
+	if git_local_branch_exists "$prefix$name"; then
+		echo "$name"
+		return 0
+	fi
 
-    matches=$(echo "$(git_local_branches)" | grep "^$(escape "$prefix$name")")
-    num_matches=$(echo "$matches" | wc -l)
-    if [ -z "$matches" ]; then
-        # no prefix match, so take it literally
-        warn "No branch matches prefix '$name'"
-        return 1
-    else
-        if [ $num_matches -eq 1 ]; then
-            echo "${matches#$prefix}"
-            return 0
-        else
-            # multiple matches, cannot decide
-            warn "Multiple branches match prefix '$name':"
-            for match in $matches; do
-                warn "- $match"
-            done
-            return 2
-        fi
-    fi
+	matches=$(echo "$(git_local_branches)" | grep "^$(escape "$prefix$name")")
+	num_matches=$(echo "$matches" | wc -l)
+	if [ -z "$matches" ]; then
+		# no prefix match, so take it literally
+		warn "No branch matches prefix '$name'"
+		return 1
+	else
+		if [ $num_matches -eq 1 ]; then
+			echo "${matches#$prefix}"
+			return 0
+		else
+			# multiple matches, cannot decide
+			warn "Multiple branches match prefix '$name':"
+			for match in $matches; do
+				warn "- $match"
+			done
+			return 2
+		fi
+	fi
 }
 
 #
@@ -580,9 +580,9 @@ github_origin_repo() {
 
   # if the URL doesn't point at GitHub, blank it
   if echo "$GITHUB_ORIGIN" | grep 'git@github.com:' > /dev/null ; then
-    GITHUB_ORIGIN=$(echo $GITHUB_ORIGIN | cut -d : -f 2- | sed -e 's|\.git||g;' )
+  	GITHUB_ORIGIN=$(echo $GITHUB_ORIGIN | cut -d : -f 2- | sed -e 's|\.git||g;' )
   elif echo "$GITHUB_ORIGIN" | grep 'https://github.com' > /dev/null ; then
-    GITHUB_ORIGIN=$(echo $GITHUB_ORIGIN | cut -c 20- | sed -e 's|\.git||g;' )
+  	GITHUB_ORIGIN=$(echo $GITHUB_ORIGIN | cut -c 20- | sed -e 's|\.git||g;' )
   else
      GITHUB_ORIGIN=
   fi
@@ -610,80 +610,80 @@ github_post() {
 #
 
 require_git_repo() {
-    if ! git rev-parse --git-dir >/dev/null 2>&1; then
-        die "fatal: Not a git repository"
-    fi
+	if ! git rev-parse --git-dir >/dev/null 2>&1; then
+		die "fatal: Not a git repository"
+	fi
 }
 
 require_remote_available() {
-    if ! git_ping_remote $1 ; then
-        die "fatal: remote repository $1 is unavailable; are you offline?"
-    fi
+	if ! git_ping_remote $1 ; then
+		die "fatal: remote repository $1 is unavailable; are you offline?"
+	fi
 }
 
 require_hubflow_initialized() {
-    if ! hubflow_is_initialized; then
-        die "fatal: Not a hubflow-enabled repo yet. Please run \"git hf init\" first."
-    fi
+	if ! hubflow_is_initialized; then
+		die "fatal: Not a hubflow-enabled repo yet. Please run \"git hf init\" first."
+	fi
 }
 
 require_clean_working_tree() {
-    git_is_clean_working_tree
-    local result=$?
-    if [ $result -eq 1 ]; then
-        die "fatal: Working tree contains unstaged changes. Aborting."
-    fi
-    if [ $result -eq 2 ]; then
-        die "fatal: Index contains uncommited changes. Aborting."
-    fi
+	git_is_clean_working_tree
+	local result=$?
+	if [ $result -eq 1 ]; then
+		die "fatal: Working tree contains unstaged changes. Aborting."
+	fi
+	if [ $result -eq 2 ]; then
+		die "fatal: Index contains uncommited changes. Aborting."
+	fi
 }
 
 require_local_branch() {
-    if ! git_local_branch_exists $1; then
-        die "fatal: Local branch '$1' does not exist and is required."
-    fi
+	if ! git_local_branch_exists $1; then
+		die "fatal: Local branch '$1' does not exist and is required."
+	fi
 }
 
 require_remote_branch() {
-    if ! has $1 $(git_remote_branches); then
-        die "Remote branch '$1' does not exist and is required."
-    fi
+	if ! has $1 $(git_remote_branches); then
+		die "Remote branch '$1' does not exist and is required."
+	fi
 }
 
 require_branch() {
-    if ! has $1 $(git_all_branches); then
-        die "Branch '$1' does not exist and is required."
-    fi
+	if ! has $1 $(git_all_branches); then
+		die "Branch '$1' does not exist and is required."
+	fi
 }
 
 require_branch_absent() {
-    if has $1 $(git_all_branches); then
-        die "Branch '$1' already exists. Pick another name."
-    fi
+	if has $1 $(git_all_branches); then
+		die "Branch '$1' already exists. Pick another name."
+	fi
 }
 
 require_tag_absent() {
-    for tag in $(git_all_tags); do
-        if [ "$1" = "$tag" ]; then
-            die "Tag '$1' already exists. Pick another name."
-        fi
-    done
+	for tag in $(git_all_tags); do
+		if [ "$1" = "$tag" ]; then
+			die "Tag '$1' already exists. Pick another name."
+		fi
+	done
 }
 
 require_branches_equal() {
-    require_local_branch "$1"
-    require_remote_branch "$2"
-    git_compare_branches "$1" "$2"
-    local status=$?
-    if [ $status -gt 0 ]; then
-        warn "Branches '$1' and '$2' have diverged."
-        if [ $status -eq 1 ]; then
-            die "And branch '$1' may be fast-forwarded."
-        elif [ $status -eq 2 ]; then
-            # Warn here, since there is no harm in being ahead
-            warn "And local branch '$1' is ahead of '$2'."
-        else
-            die "Branches need merging first."
-        fi
-    fi
+	require_local_branch "$1"
+	require_remote_branch "$2"
+	git_compare_branches "$1" "$2"
+	local status=$?
+	if [ $status -gt 0 ]; then
+		warn "Branches '$1' and '$2' have diverged."
+		if [ $status -eq 1 ]; then
+			die "And branch '$1' may be fast-forwarded."
+		elif [ $status -eq 2 ]; then
+			# Warn here, since there is no harm in being ahead
+			warn "And local branch '$1' is ahead of '$2'."
+		else
+			die "Branches need merging first."
+		fi
+	fi
 }

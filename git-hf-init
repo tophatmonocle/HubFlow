@@ -41,13 +41,13 @@
 #
 
 usage() {
-    echo "usage: git hf init [-af]"
+	echo "usage: git hf init [-af]"
 }
 
 parse_args() {
-    # parse options
-    FLAGS "$@" || exit $?
-    eval set -- "${FLAGS_ARGV}"
+	# parse options
+	FLAGS "$@" || exit $?
+	eval set -- "${FLAGS_ARGV}"
 }
 
 # Default entry when no SUBACTION is given
@@ -89,6 +89,6 @@ cmd_default() {
 }
 
 cmd_help() {
-    usage
-    exit 0
+	usage
+	exit 0
 }
