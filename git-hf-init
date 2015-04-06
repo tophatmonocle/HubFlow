@@ -3,13 +3,13 @@
 # branching model to working with GitHub
 #
 # Original blog post presenting this model is found at:
-#    http://nvie.com/git-model
+#	 http://nvie.com/git-model
 #
 # The HubFlow documentation is found at:
-#    http://datasift.github.com/gitflow/
+#	 http://datasift.github.com/gitflow/
 #
 # Feel free to contribute to this project at:
-#    http://github.com/datasift/gitflow
+#	 http://github.com/datasift/gitflow
 #
 # Copyright 2010 Vincent Driessen. All rights reserved.
 # Copyright 2012 MediaSift Ltd. All rights reserved.
@@ -17,12 +17,12 @@
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
-#    1. Redistributions of source code must retain the above copyright notice,
-#       this list of conditions and the following disclaimer.
+#	 1. Redistributions of source code must retain the above copyright notice,
+#		this list of conditions and the following disclaimer.
 #
-#    2. Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in the
-#       documentation and/or other materials provided with the distribution.
+#	 2. Redistributions in binary form must reproduce the above copyright
+#		notice, this list of conditions and the following disclaimer in the
+#		documentation and/or other materials provided with the distribution.
 #
 # THIS SOFTWARE IS PROVIDED BY VINCENT DRIESSEN ``AS IS'' AND ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -52,40 +52,42 @@ parse_args() {
 
 # Default entry when no SUBACTION is given
 cmd_default() {
-    DEFINE_boolean force false 'force setting of hubflow branches, even if already configured' f
-    DEFINE_boolean ask false 'ask for branch naming conventions' a
-    parse_args "$@"
-
-    if ! git rev-parse --git-dir >/dev/null 2>&1; then
-        git init
-    else
-        # assure that we are not working in a repo with local changes
-        git_repo_is_headless || require_clean_working_tree
-    fi
-
-    # running git hf init on an already initialized repo is fine
-    if hubflow_is_initialized && ! flag force; then
-        warn "Already initialized for hubflow."
-        warn "To force reinitialization, use: git hf init -f"
-        exit 0
-    fi
-
-    git config hubflow.branch.master "master"
-    git config hubflow.prefix.feature "feature/"
-    git config hubflow.prefix.release "release/"
-    git config hubflow.prefix.hotfix "hotfix/"
-    git config hubflow.prefix.support "support/"
-    git config hubflow.prefix.versiontag "v"
-
-    # assert the hubflow repo has been correctly initialized
-    hubflow_is_initialized
-
-    # at this point, we should be on the develop branch, which may or
-    # may not exist at origin
-    #
-    # Load the settings that were just written so that $ORIGIN,
-    # etc. are properly defined
-    hubflow_load_settings
+	DEFINE_boolean force false 'force setting of hubflow branches, even if already configured' f
+	DEFINE_boolean ask false 'ask for branch naming conventions' a
+    
+	parse_args "$@"
+	
+	if ! git rev-parse --git-dir >/dev/null 2>&1; then
+		git init
+	else
+		# assure that we are not working in a repo with local changes
+		git_repo_is_headless || require_clean_working_tree
+	fi
+	
+	# running git hf init on an already initialized repo is fine
+	if hubflow_is_initialized && ! flag force; then
+		warn "Already initialized for hubflow."
+		warn "To force reinitialization, use: git hf init -f"
+		exit 0
+	fi
+	
+	git config hubflow.branch.master "master"
+	git config hubflow.branch.develop "develop"
+	git config hubflow.prefix.feature "feature/"
+	git config hubflow.prefix.release "release/"
+	git config hubflow.prefix.hotfix "hotfix/"
+	git config hubflow.prefix.support "support/"
+	git config hubflow.prefix.versiontag "v"
+	
+	# assert the hubflow repo has been correctly initialized
+	hubflow_is_initialized
+	
+	# at this point, we should be on the develop branch, which may or
+	# may not exist at origin
+	#
+	# Load the settings that were just written so that $ORIGIN,
+	# etc. are properly defined
+	hubflow_load_settings
 }
 
 cmd_help() {
